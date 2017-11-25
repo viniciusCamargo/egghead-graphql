@@ -1,4 +1,8 @@
+const express = require('express')
+const graphqlHTTP = require('express-graphql')
 const { graphql, buildSchema } = require('graphql')
+
+const server = express()
 
 const schema = buildSchema(`
   type Video {
@@ -44,17 +48,12 @@ const resolvers = {
   videos: () => videos
 }
 
-const query = `
-  query myFirstQuery {
-    videos {
-      id
-      title
-      duration
-      watched
-    }
-  }
-`
+server.use('/graphql', graphqlHTTP({
+  schema,
+  graphiql: true,
+  rootValue: resolvers
+}))
 
-graphql(schema, query, resolvers)
-  .then(console.log)
-  .catch(console.error)
+server.listen(3000, () => {
+  console.log('listening on http://localhost:3000')
+})
