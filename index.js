@@ -8,6 +8,7 @@ const {
   GraphQLInt,
   GraphQLBoolean
 } = require('graphql')
+const { getVideoById } = require('./data')
 
 const server = express()
 
@@ -39,12 +40,13 @@ const queryType = new GraphQLObjectType({
   fields: {
     video: {
       type: videoType,
-      resolve: () => Promise.resolve({
-        id: 'a',
-        title: 'GraphQL',
-        duration: 180,
-        watched: false
-      })
+      args: {
+        id: {
+          type: GraphQLID,
+          description: 'The id of the video.'
+        }
+      },
+      resolve: (_, args) => getVideoById(args.id)
     }
   }
 })
@@ -52,32 +54,6 @@ const queryType = new GraphQLObjectType({
 const schema = new GraphQLSchema({
   query: queryType
 })
-
-const videoA = {
-  id: 'a',
-  title: 'Create a GraphQL Schema',
-  duration: 120,
-  watched: true
-}
-
-const videoB = {
-  id: 'b',
-  title: 'Ember.js CLI',
-  duration: 240,
-  watched: false
-}
-
-const videos = [videoA, videoB]
-
-const resolvers = {
-  video: () => ({
-    id: '1',
-    title: 'bar',
-    duration: 180,
-    watched: false
-  }),
-  videos: () => videos
-}
 
 server.use('/graphql', graphqlHTTP({
   schema,
