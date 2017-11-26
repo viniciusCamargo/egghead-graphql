@@ -20,6 +20,9 @@ const getVideoById = (id) => new Promise((resolve) => {
   resolve(video)
 })
 
+const getVideos = () => Promise.resolve(videos)
+
 module.exports = {
-  getVideoById
+  getVideoById,
+  getVideos
 }
